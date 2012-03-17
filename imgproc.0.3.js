@@ -32,12 +32,19 @@
  * - Added google io 2010 color pallete
  * - Added rounded pixel grid
  * 
+ * version 0.3:
+ * - Added custom render size
+ * - Added various apple and android screen size
+ * 
  */
 
 var canvas;
 var context;
 var w;
 var h;
+
+var renderWidth = window.innerWidth;
+var renderHeight = window.innerHeight;
 
 var black_white = ['#000000', '#ffffff'];
 var cmyk = ['#00ffff', '#ff00ff', '#ffff00', '#000000'];
@@ -63,6 +70,10 @@ var shape = function() {
 	this.color = 'bright_colorful';
 	this.width = 10;
 	this.height = 10;
+	this.renderWidth = renderWidth;
+	this.renderHeight = renderHeight;
+	this.appleScreen = 'iphone_retina';
+	this.androidScreen = 'android_'
 	this.render = function() {
 		resize();
 		draw(this.type, this.color, this.width, this.height);
@@ -77,9 +88,37 @@ function init()
 {
 	var gui = new dat.GUI();
 	var params = new shape();
-	var shapeFolder = gui.addFolder('Shape size');
-	var widthController = shapeFolder.add(params, 'width').name('Shape width').min(1);
-	var heightController = shapeFolder.add(params, 'height').name('Shape height').min(1);
+	var shapeSizeFolder = gui.addFolder('Shape size');
+	var renderSizeFolder = gui.addFolder('Render Size');
+	var widthController = shapeSizeFolder.add(params, 'width').name('Shape width').min(1).max(window.innerWidth);
+	var heightController = shapeSizeFolder.add(params, 'height').name('Shape height').min(1).max(window.innerHeight);
+	var appleScreenFolder = renderSizeFolder.addFolder('Apple Devices');
+	var androidScreenFolder = renderSizeFolder.addFolder('Android Devices');
+	var customScreenFolder = renderSizeFolder.addFolder('Custom Screen');
+	var appleScreenController = appleScreenFolder.add(params, 'appleScreen',
+													  { 'Iphone': 'iphone',
+													    'Iphone Retina Display': 'iphone_retina',
+													    'Ipad': 'ipad'
+													  }).name('Apple Screen size');
+	var androidScreenController = androidScreenFolder.add(params, 'androidScreen',
+													  { 'QVGA (240x320)': 'android_240_320',
+														'(480x640)': 'android_480_640',
+														'WQVGA400 (240x400)': 'android_ldpi_240_400',
+														'WQVGA432 (240x432)': 'android_ldpi_240_432',
+														'HVGA (320x480)': 'android_320_480',
+														'WVGA800 (480x800)': 'android_480_800',
+														'WVGA854 (480x854)': 'android_480_854',
+														'(600x1024)': 'android_600_1024',
+														'(1024x600)': 'android_1024_600',
+														'(1024x768)': 'android_1024_768',
+														'(1280x768)': 'android_1280_768',
+														'WXGA (1280x800)': 'android_1280_800',
+														'(1536x1152)': 'android_1536_1152',
+														'(1920x1152)': 'android_1920_1152',
+														'(1920x1200)': 'android_1920_1200'
+													  }).name('Android Screen size');
+	var renderWidthController = customScreenFolder.add(params, 'renderWidth').name('Custom width').min(320).max(window.innerWidth);
+	var renderHeightController = customScreenFolder.add(params, 'renderHeight').name('Custom height').min(480).max(window.innerHeight);
 	var shapeController = gui.add(params, 'type',
 								  { 'Horizontal Bar': 'horizontal',
 								  	'Vertical Bar': 'vertical',
@@ -107,6 +146,17 @@ function init()
 		heightController.width = value;
 	});
 
+	appleScreenController.onChange(screenSizeCalculate);
+	androidScreenController.onChange(screenSizeCalculate);
+
+	renderWidthController.onChange(function(value) {
+		renderWidth = value;
+	});
+
+	renderHeightController.onChange(function(value) {
+		renderHeight = value;
+	});
+
 	shapeController.onChange(function(value) {
 		shapeController.type = value;
 	});
@@ -122,6 +172,84 @@ function init()
 
 	params.render();
 }
+
+var screenSizeCalculate = function(value) {
+	switch(value)
+	{
+		case 'iphone':
+			renderWidth = 320;
+			renderHeight = 480;
+			break;
+		case 'iphone_retina':
+			renderWidth = 640;
+			renderHeight = 960;
+			break;
+		case 'ipad':
+			renderWidth = 768;
+			renderHeight = 1024;
+			break;
+		case 'android_240_320':
+			renderWidth = 240;
+			renderHeight = 320;
+			break;
+		case 'android_480_640':
+			renderWidth = 480;
+			renderHeight = 640;
+			break;
+		case 'android_ldpi_240_400':
+			renderWidth = 240;
+			renderHeight = 400;
+			break;
+		case 'android_ldpi_240_432':
+			renderWidth = 240;
+			renderHeight = 432;
+			break;
+		case 'android_320_480':
+			renderWidth = 320;
+			renderHeight = 480;
+			break;
+		case 'android_480_800':
+			renderWidth = 480;
+			renderHeight = 800;
+			break;
+		case 'android_480_854':
+			renderWidth = 480;
+			renderHeight = 854;
+			break;
+		case 'android_600_1024':
+			renderWidth = 600;
+			renderHeight = 1024;
+			break;
+		case 'android_1024_600':
+			renderWidth = 1024;
+			renderHeight = 600;
+			break;
+		case 'android_1024_768':
+			renderWidth = 1024;
+			renderHeight = 768;
+			break;
+		case 'android_1280_768':
+			renderWidth = 1280;
+			renderHeight = 768;
+			break;
+		case 'android_1280_800':
+			renderWidth = 1280;
+			renderHeight = 800;
+			break;
+		case 'android_1536_1152':
+			renderWidth = 1536;
+			renderHeight = 1152;
+			break;
+		case 'android_1920_1152':
+			renderWidth = 1920;
+			renderHeight = 1152;
+			break;
+		case 'android_1920_1200':
+			renderWidth = 1920;
+			renderHeight = 1200;
+			break;
+	}
+};
 
 function draw(paramType, paramColor, paramWidth, paramHeight)
 {
@@ -299,8 +427,8 @@ function computeCoordinate(idxCol, idxRow, paramDistance, paramWidth, paramHeigh
 
 function resize()
 {
-	w = canvas.width = window.innerWidth;
-	h = canvas.height = window.innerHeight;
+	w = canvas.width = renderWidth;
+	h = canvas.height = renderHeight;
 
 	reset();
 }
