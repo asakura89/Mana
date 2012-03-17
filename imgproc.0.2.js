@@ -26,6 +26,12 @@
  * version 0.1:
  * - First release
  * 
+ * version 0.2:		
+ * - Added save image function
+ * - Added shape's width and height control
+ * - Added google io 2010 color pallete
+ * - Added rounded pixel grid
+ * 
  */
 
 var canvas;
@@ -48,6 +54,9 @@ var bright_colorful = ['#f0f0ef', '#fbfaf9', '#8ecb00', '#8ac900',
 					   '#3e3e3e', '#46c7ec', '#58d5f1', '#ffae00',
 					   '#dc0967', '#e40b7c'];
 var hakim_particle = ['#000000', '#ff0000', '#ffff00'];
+var google_io_2010 = ['#0068b3', '#f9aa89', '#e51937', '#c41230',
+					  '#ffd24f', '#f0b310', '#1ab7ea', '#005581',
+					  '#00704a', '#00a950', '#b3d88c'];
 
 var shape = function() {
 	this.type = 'grid';
@@ -56,7 +65,10 @@ var shape = function() {
 	this.height = 10;
 	this.render = function() {
 		resize();
-		draw(this.type, this.color);
+		draw(this.type, this.color, this.width, this.height);
+	};
+	this.save = function() {
+		save();
 	};
 };
 
@@ -65,10 +77,14 @@ function init()
 {
 	var gui = new dat.GUI();
 	var params = new shape();
+	var shapeFolder = gui.addFolder('Shape size');
+	var widthController = shapeFolder.add(params, 'width').name('Shape width').min(1);
+	var heightController = shapeFolder.add(params, 'height').name('Shape height').min(1);
 	var shapeController = gui.add(params, 'type',
 								  { 'Horizontal Bar': 'horizontal',
 								  	'Vertical Bar': 'vertical',
-								  	'Pixel Grid': 'grid'
+								  	'Pixel Grid': 'grid',
+								  	'Round Pixel Grid': 'round_grid'
 								  }).name('Shape');
 	var colorController = gui.add(params, 'color',
 								  { 'Black and White': 'black_white',
@@ -77,9 +93,19 @@ function init()
 								  	'RGB': 'rgb',
 								  	'Bright Colorful': 'bright_colorful',
 								  	'Hakim Particle': 'hakim_particle',
+								  	'Google IO 2010 theme': 'google_io_2010',
 								  	'All Colors': 'all'
 								  }).name('Color');
 	gui.add(params, 'render').name('Render Shape');
+	gui.add(params, 'save').name('Save Image');
+
+	widthController.onChange(function(value) {
+		widthController.width = value;
+	});
+
+	heightController.onChange(function(value) {
+		heightController.width = value;
+	});
 
 	shapeController.onChange(function(value) {
 		shapeController.type = value;
@@ -97,14 +123,14 @@ function init()
 	params.render();
 }
 
-function draw(paramType, paramColor)
+function draw(paramType, paramColor, paramWidth, paramHeight)
 {
 	var shape;
 
 	switch(paramType)
 	{
 		case 'horizontal':
-			shape = createHorizontalBar(10, 0);
+			shape = createHorizontalBar(paramHeight, 0);
 			var row = shape.length;
 
 			for (var i = 0; i < row; i++) {
@@ -113,7 +139,7 @@ function draw(paramType, paramColor)
 			}
 			break;
 		case 'vertical':
-			shape = createVerticalBar(10, 0);
+			shape = createVerticalBar(paramWidth, 0);
 			var col = shape.length;
 
 			for (var i = 0; i < col; i++) {
@@ -122,7 +148,7 @@ function draw(paramType, paramColor)
 			}
 			break;
 		case 'grid':
-			shape = createSquareGrid(10, 10, 0);
+			shape = createSquareGrid(paramWidth, paramHeight, 0);
 			var col = shape.length;
 			var row = shape[0].element.length;
 
@@ -134,7 +160,27 @@ function draw(paramType, paramColor)
 				}
 			}
 			break;
+		case 'round_grid':
+			shape = createSquareGrid(paramWidth, paramHeight, 0);
+			var col = shape.length;
+			var row = shape[0].element.length;
+
+			for (var i = 0; i < col; i++) {
+				for (var j = 0; j < row; j++) {
+					context.fillStyle = getColor(paramColor);
+					context.beginPath();
+					context.arc((shape[i].element[j].x + shape[i].element[j].w)-shape[i].element[j].w/2, (shape[i].element[j].y  + shape[i].element[j].w)-shape[i].element[j].w/2, shape[i].element[j].w/2, 0, Math.PI*2, true);
+					context.closePath();
+					context.fill();
+				}
+			}
+			break;
 	}
+}
+
+function save()
+{
+	window.open(canvas.toDataURL('image/png'));
 }
 
 function getColor(paramColor)
@@ -167,6 +213,10 @@ function getColor(paramColor)
 		case 'hakim_particle':
 			arrlen = hakim_particle.length;
 			color = hakim_particle[Math.round(Math.random()*arrlen)];
+			break;
+		case 'google_io_2010':
+			arrlen = google_io_2010.length;
+			color = google_io_2010[Math.round(Math.random()*arrlen)];
 			break;
 		case 'all':
 			color = 'rgba(' + Math.round(Math.random()*255) + ',' + Math.round(Math.random()*255) + ',' + Math.round(Math.random()*255) + ', 1)';
@@ -260,6 +310,7 @@ function reset()
 	context.clearRect(0,0,w,h);
 }
 
+// http://www.webdeveloper.com/forum/showthread.php?t=90849
 function Array2D()
 {
 	function setArray(paramLength)
