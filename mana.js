@@ -36,419 +36,442 @@
  * - Added custom render size
  * - Added various apple and android screen size
  * 
+ * version 0.4:
+ * - Cleaning Up
+ * - Fix screen size changes
  */
 
-var canvas;
-var context;
-var w;
-var h;
+"use strict";
 
-var renderWidth = window.innerWidth;
-var renderHeight = window.innerHeight;
-
-var black_white = ['#000000', '#ffffff'];
-var cmyk = ['#00ffff', '#ff00ff', '#ffff00', '#000000'];
-var rgb = ['#cc0000', '#00cc00', '#0000cc'];
-var gray = ['#000000', '#080808', '#101010', '#181818',
-			'#202020', '#282828', '#303030', '#383838',
-			'#404040', '#484848', '#505050', '#585858',
-			'#606060', '#686868', '#707070', '#787878',
-			'#808080', '#888888', '#909090', '#989898',
-			'#a0a0a0', '#a8a8a8', '#b0b0b0', '#b8b8b8',
-			'#c0c0c0', '#d0d0d0', '#d8d8d8', '#e0e0e0',
-			'#e8e8e8', '#f0f0f0', '#f8f8f8', '#ffffff'];
-var bright_colorful = ['#f0f0ef', '#fbfaf9', '#8ecb00', '#8ac900',
-					   '#3e3e3e', '#46c7ec', '#58d5f1', '#ffae00',
-					   '#dc0967', '#e40b7c'];
-var hakim_particle = ['#000000', '#ff0000', '#ffff00'];
-var google_io_2010 = ['#0068b3', '#f9aa89', '#e51937', '#c41230',
-					  '#ffd24f', '#f0b310', '#1ab7ea', '#005581',
-					  '#00704a', '#00a950', '#b3d88c'];
-
-var shape = function() {
-	this.type = 'grid';
-	this.color = 'bright_colorful';
-	this.width = 10;
-	this.height = 10;
-	this.renderWidth = renderWidth;
-	this.renderHeight = renderHeight;
-	this.appleScreen = 'iphone_retina';
-	this.androidScreen = 'android_'
-	this.render = function() {
-		resize();
-		draw(this.type, this.color, this.width, this.height);
-	};
-	this.save = function() {
-		save();
-	};
+var ShapeType = {
+    HORIZONTAL: "0",
+    VERTICAL: "1",
+    GRID: "2",
+    ROUND_GRID: "3"
 };
 
-
-function init()
-{
-	var gui = new dat.GUI();
-	var params = new shape();
-	var shapeSizeFolder = gui.addFolder('Shape size');
-	var renderSizeFolder = gui.addFolder('Render Size');
-	var widthController = shapeSizeFolder.add(params, 'width').name('Shape width').min(1).max(window.innerWidth);
-	var heightController = shapeSizeFolder.add(params, 'height').name('Shape height').min(1).max(window.innerHeight);
-	var appleScreenFolder = renderSizeFolder.addFolder('Apple Devices');
-	var androidScreenFolder = renderSizeFolder.addFolder('Android Devices');
-	var customScreenFolder = renderSizeFolder.addFolder('Custom Screen');
-	var appleScreenController = appleScreenFolder.add(params, 'appleScreen',
-													  { 'Iphone': 'iphone',
-													    'Iphone Retina Display': 'iphone_retina',
-													    'Ipad': 'ipad'
-													  }).name('Apple Screen size');
-	var androidScreenController = androidScreenFolder.add(params, 'androidScreen',
-													  { 'QVGA (240x320)': 'android_240_320',
-														'(480x640)': 'android_480_640',
-														'WQVGA400 (240x400)': 'android_ldpi_240_400',
-														'WQVGA432 (240x432)': 'android_ldpi_240_432',
-														'HVGA (320x480)': 'android_320_480',
-														'WVGA800 (480x800)': 'android_480_800',
-														'WVGA854 (480x854)': 'android_480_854',
-														'(600x1024)': 'android_600_1024',
-														'(1024x600)': 'android_1024_600',
-														'(1024x768)': 'android_1024_768',
-														'(1280x768)': 'android_1280_768',
-														'WXGA (1280x800)': 'android_1280_800',
-														'(1536x1152)': 'android_1536_1152',
-														'(1920x1152)': 'android_1920_1152',
-														'(1920x1200)': 'android_1920_1200'
-													  }).name('Android Screen size');
-	var renderWidthController = customScreenFolder.add(params, 'renderWidth').name('Custom width').min(320).max(window.innerWidth);
-	var renderHeightController = customScreenFolder.add(params, 'renderHeight').name('Custom height').min(480).max(window.innerHeight);
-	var shapeController = gui.add(params, 'type',
-								  { 'Horizontal Bar': 'horizontal',
-								  	'Vertical Bar': 'vertical',
-								  	'Pixel Grid': 'grid',
-								  	'Round Pixel Grid': 'round_grid'
-								  }).name('Shape');
-	var colorController = gui.add(params, 'color',
-								  { 'Black and White': 'black_white',
-								  	'Gray': 'gray',
-								  	'CMYK': 'cmyk',
-								  	'RGB': 'rgb',
-								  	'Bright Colorful': 'bright_colorful',
-								  	'Hakim Particle': 'hakim_particle',
-								  	'Google IO 2010 theme': 'google_io_2010',
-								  	'All Colors': 'all'
-								  }).name('Color');
-	gui.add(params, 'render').name('Render Shape');
-	gui.add(params, 'save').name('Save Image');
-
-	widthController.onChange(function(value) {
-		widthController.width = value;
-	});
-
-	heightController.onChange(function(value) {
-		heightController.width = value;
-	});
-
-	appleScreenController.onChange(screenSizeCalculate);
-	androidScreenController.onChange(screenSizeCalculate);
-
-	renderWidthController.onChange(function(value) {
-		renderWidth = value;
-	});
-
-	renderHeightController.onChange(function(value) {
-		renderHeight = value;
-	});
-
-	shapeController.onChange(function(value) {
-		shapeController.type = value;
-	});
-
-	colorController.onChange(function(value) {
-		colorController.color = value;
-	});
-
-	canvas = document.getElementById('myCanvas');
-	context = canvas.getContext('2d');
-
-	window.addEventListener('resize', function() { params.render(); }, false);
-
-	params.render();
-}
-
-var screenSizeCalculate = function(value) {
-	switch(value)
-	{
-		case 'iphone':
-			renderWidth = 320;
-			renderHeight = 480;
-			break;
-		case 'iphone_retina':
-			renderWidth = 640;
-			renderHeight = 960;
-			break;
-		case 'ipad':
-			renderWidth = 768;
-			renderHeight = 1024;
-			break;
-		case 'android_240_320':
-			renderWidth = 240;
-			renderHeight = 320;
-			break;
-		case 'android_480_640':
-			renderWidth = 480;
-			renderHeight = 640;
-			break;
-		case 'android_ldpi_240_400':
-			renderWidth = 240;
-			renderHeight = 400;
-			break;
-		case 'android_ldpi_240_432':
-			renderWidth = 240;
-			renderHeight = 432;
-			break;
-		case 'android_320_480':
-			renderWidth = 320;
-			renderHeight = 480;
-			break;
-		case 'android_480_800':
-			renderWidth = 480;
-			renderHeight = 800;
-			break;
-		case 'android_480_854':
-			renderWidth = 480;
-			renderHeight = 854;
-			break;
-		case 'android_600_1024':
-			renderWidth = 600;
-			renderHeight = 1024;
-			break;
-		case 'android_1024_600':
-			renderWidth = 1024;
-			renderHeight = 600;
-			break;
-		case 'android_1024_768':
-			renderWidth = 1024;
-			renderHeight = 768;
-			break;
-		case 'android_1280_768':
-			renderWidth = 1280;
-			renderHeight = 768;
-			break;
-		case 'android_1280_800':
-			renderWidth = 1280;
-			renderHeight = 800;
-			break;
-		case 'android_1536_1152':
-			renderWidth = 1536;
-			renderHeight = 1152;
-			break;
-		case 'android_1920_1152':
-			renderWidth = 1920;
-			renderHeight = 1152;
-			break;
-		case 'android_1920_1200':
-			renderWidth = 1920;
-			renderHeight = 1200;
-			break;
-	}
+var ColorType = {
+    BW: "0",
+    CMYK: "1",
+    RGB: "2",
+    GRAY: "3",
+    BC: "4",
+    HP: "5",
+    GOOGLEIO2010: "6",
+    ALL: "7"
 };
 
-function draw(paramType, paramColor, paramWidth, paramHeight)
-{
-	var shape;
+var DeviceType = {
+    IPHONE: "0",
+    IPHONE_RETINA: "1",
+    IPAD: "2",
+    ANDROID_240_320: "3",
+    ANDROID_480_640: "4",
+    ANDROID_LDPI_240_400: "5",
+    ANDROID_LDPI_240_432: "6",
+    ANDROID_320_480: "7",
+    ANDROID_480_800: "8",
+    ANDROID_480_854: "9",
+    ANDROID_600_1024: "10",
+    ANDROID_1024_600: "11",
+    ANDROID_1024_768: "12",
+    ANDROID_1280_768: "13",
+    ANDROID_1280_800: "14",
+    ANDROID_1536_1152: "15",
+    ANDROID_1920_1152: "16",
+    ANDROID_1920_1200: "17"
+};
 
-	switch(paramType)
-	{
-		case 'horizontal':
-			shape = createHorizontalBar(paramHeight, 0);
-			var row = shape.length;
+var MaxScreenSize = {
+    Width: 1920,
+    Height: 1200
+};
 
-			for (var i = 0; i < row; i++) {
-				context.fillStyle = getColor(paramColor);
-				context.fillRect(shape[i].x, shape[i].y, shape[i].w, shape[i].h);
-			}
-			break;
-		case 'vertical':
-			shape = createVerticalBar(paramWidth, 0);
-			var col = shape.length;
+var MinScreenSize = {
+    Width: 240,
+    Height: 320
+};
 
-			for (var i = 0; i < col; i++) {
-				context.fillStyle = getColor(paramColor);
-				context.fillRect(shape[i].x, shape[i].y, shape[i].w, shape[i].h);
-			}
-			break;
-		case 'grid':
-			shape = createSquareGrid(paramWidth, paramHeight, 0);
-			var col = shape.length;
-			var row = shape[0].element.length;
+var Mana = (function() {
+    var obj = {};
 
-			for (var i = 0; i < col; i++) {
-				for (var j = 0; j < row; j++) {
-					context.fillStyle = getColor(paramColor);
-					context.fillRect(shape[i].element[j].x, shape[i].element[j].y,
-									 shape[i].element[j].w, shape[i].element[j].h);
-				}
-			}
-			break;
-		case 'round_grid':
-			shape = createSquareGrid(paramWidth, paramHeight, 0);
-			var col = shape.length;
-			var row = shape[0].element.length;
+    obj.Width = window.innerWidth;
+    obj.Height = window.innerHeight;
+    obj.Canvas = document.createElement("canvas");
+    obj.Context = obj.Canvas.getContext("2d");
+    obj.Colors = {
+        BlackWhite: ["#000000", "#ffffff"],
+        CMYK: ["#00ffff", "#ff00ff", "#ffff00", "#000000"],
+        RGB: ["#cc0000", "#00cc00", "#0000cc"],
+        Gray: ["#000000", "#080808", "#101010", "#181818",
+               "#202020", "#282828", "#303030", "#383838",
+               "#404040", "#484848", "#505050", "#585858",
+               "#606060", "#686868", "#707070", "#787878",
+               "#808080", "#888888", "#909090", "#989898",
+               "#a0a0a0", "#a8a8a8", "#b0b0b0", "#b8b8b8",
+               "#c0c0c0", "#d0d0d0", "#d8d8d8", "#e0e0e0",
+               "#e8e8e8", "#f0f0f0", "#f8f8f8", "#ffffff"],
+        BrightColorful: ["#f0f0ef", "#fbfaf9", "#8ecb00", "#8ac900",
+                         "#3e3e3e", "#46c7ec", "#58d5f1", "#ffae00",
+                         "#dc0967", "#e40b7c"],
+        HakimParticle: ["#000000", "#ff0000", "#ffff00"],
+        GoogleIO2010: ["#0068b3", "#f9aa89", "#e51937", "#c41230",
+                       "#ffd24f", "#f0b310", "#1ab7ea", "#005581",
+                       "#00704a", "#00a950", "#b3d88c"]
+    };
+    obj.GetRandomColor = function(paramColor) {
+        var arrlen, color;
 
-			for (var i = 0; i < col; i++) {
-				for (var j = 0; j < row; j++) {
-					context.fillStyle = getColor(paramColor);
-					context.beginPath();
-					context.arc((shape[i].element[j].x + shape[i].element[j].w)-shape[i].element[j].w/2, (shape[i].element[j].y  + shape[i].element[j].w)-shape[i].element[j].w/2, shape[i].element[j].w/2, 0, Math.PI*2, true);
-					context.closePath();
-					context.fill();
-				}
-			}
-			break;
-	}
-}
+        switch(paramColor) {
+            case ColorType.BW:
+                arrlen = obj.Colors.BlackWhite.length;
+                color = obj.Colors.BlackWhite[Math.round(Math.random() * arrlen)];
+                break;
+            case ColorType.GRAY:
+                arrlen = obj.Colors.Gray.length;
+                color = obj.Colors.Gray[Math.round(Math.random() * arrlen)];
+                break;
+            case ColorType.CMYK:
+                arrlen = obj.Colors.CMYK.length;
+                color = obj.Colors.CMYK[Math.round(Math.random() * arrlen)];
+                break;
+            case ColorType.RGB:
+                arrlen = obj.Colors.RGB.length;
+                color = obj.Colors.RGB[Math.round(Math.random() * arrlen)];
+                break;
+            case ColorType.BC:
+                arrlen = obj.Colors.BrightColorful.length;
+                color = obj.Colors.BrightColorful[Math.round(Math.random() * arrlen)];
+                break;
+            case ColorType.HP:
+                arrlen = obj.Colors.HakimParticle.length;
+                color = obj.Colors.HakimParticle[Math.round(Math.random() * arrlen)];
+                break;
+            case ColorType.GOOGLEIO2010:
+                arrlen = obj.Colors.GoogleIO2010.length;
+                color = obj.Colors.GoogleIO2010[Math.round(Math.random() * arrlen)];
+                break;
+            case ColorType.ALL:
+                color = "rgba(" + Math.round(Math.random() * 255) + "," + Math.round(Math.random() * 255) + "," + Math.round(Math.random() * 255) + ", 1)";
+                break;
+        }
 
-function save()
-{
-	window.open(canvas.toDataURL('image/png'));
-}
+        return color;
+    };
+    obj.GetScreenSize = function(paramDevice) {
+        var screenSize = { w: 0, h: 0 };
 
-function getColor(paramColor)
-{
-	var arrlen;
-	var color;
+        switch (paramDevice) {
+            case DeviceType.IPHONE:
+                screenSize.w = 320;
+                screenSize.h = 480;
+                break;
+            case DeviceType.IPHONE_RETINA:
+                screenSize.w = 640;
+                screenSize.h = 960;
+                break;
+            case DeviceType.IPAD:
+                screenSize.w = 768;
+                screenSize.h = 1024;
+                break;
+            case DeviceType.ANDROID_240_320:
+                screenSize.w = 240;
+                screenSize.h = 320;
+                break;
+            case DeviceType.ANDROID_480_640:
+                screenSize.w = 480;
+                screenSize.h = 640;
+                break;
+            case DeviceType.ANDROID_LDPI_240_400:
+                screenSize.w = 240;
+                screenSize.h = 400;
+                break;
+            case DeviceType.ANDROID_LDPI_240_432:
+                screenSize.w = 240;
+                screenSize.h = 432;
+                break;
+            case DeviceType.ANDROID_320_480:
+                screenSize.w = 320;
+                screenSize.h = 480;
+                break;
+            case DeviceType.ANDROID_480_800:
+                screenSize.w = 480;
+                screenSize.h = 800;
+                break;
+            case DeviceType.ANDROID_480_854:
+                screenSize.w = 480;
+                screenSize.h = 854;
+                break;
+            case DeviceType.ANDROID_600_1024:
+                screenSize.w = 600;
+                screenSize.h = 1024;
+                break;
+            case DeviceType.ANDROID_1024_600:
+                screenSize.w = 1024;
+                screenSize.h = 600;
+                break;
+            case DeviceType.ANDROID_1024_768:
+                screenSize.w = 1024;
+                screenSize.h = 768;
+                break;
+            case DeviceType.ANDROID_1280_768:
+                screenSize.w = 1280;
+                screenSize.h = 768;
+                break;
+            case DeviceType.ANDROID_1280_800:
+                screenSize.w = 1280;
+                screenSize.h = 800;
+                break;
+            case DeviceType.ANDROID_1536_1152:
+                screenSize.w = 1536;
+                screenSize.h = 1152;
+                break;
+            case DeviceType.ANDROID_1920_1152:
+                screenSize.w = 1920;
+                screenSize.h = 1152;
+                break;
+            case DeviceType.ANDROID_1920_1200:
+                screenSize.w = 1920;
+                screenSize.h = 1200;
+                break;
+        }
 
-	switch(paramColor)
-	{
-		case 'black_white':
-			arrlen = black_white.length;
-			color = black_white[Math.round(Math.random()*arrlen)];
-			break;
-		case 'gray':
-			arrlen = gray.length;
-			color = gray[Math.round(Math.random()*arrlen)];
-			break;
-		case 'cmyk':
-			arrlen = cmyk.length;
-			color = cmyk[Math.round(Math.random()*arrlen)];
-			break;
-		case 'rgb':
-			arrlen = rgb.length;
-			color = rgb[Math.round(Math.random()*arrlen)];
-			break;
-		case 'bright_colorful':
-			arrlen = bright_colorful.length;
-			color = bright_colorful[Math.round(Math.random()*arrlen)];
-			break;
-		case 'hakim_particle':
-			arrlen = hakim_particle.length;
-			color = hakim_particle[Math.round(Math.random()*arrlen)];
-			break;
-		case 'google_io_2010':
-			arrlen = google_io_2010.length;
-			color = google_io_2010[Math.round(Math.random()*arrlen)];
-			break;
-		case 'all':
-			color = 'rgba(' + Math.round(Math.random()*255) + ',' + Math.round(Math.random()*255) + ',' + Math.round(Math.random()*255) + ', 1)';
-			break;
-	}
+        return screenSize;
+    };
+    obj.ComputeCoordinate = function(idxCol, idxRow, paramDistance, paramWidth, paramHeight) {
+        var retxy = {
+            x: ((idxCol + 1) * paramDistance) + (idxCol * paramWidth),
+            y: ((idxRow + 1) * paramDistance) + (idxRow * paramHeight)
+        };
 
-	return color;
-}
+        return retxy;
+    };
+    obj.CreateHorizontalBar = function(paramHeight, paramDistance) {
+        var gridRow = Math.round(obj.Height / paramHeight);
+        var square2Create = new Array(gridRow);
 
-function createHorizontalBar(paramHeight, paramDistance)
-{
-	var gridRow = Math.round(h / paramHeight);
-	var square2Create = new Array(gridRow);
+        for(var i = 0; i < gridRow; i++) {
+            var xy = obj.ComputeCoordinate(0, i, paramDistance, obj.Width, paramHeight);
+            square2Create[i] = {
+                x: xy.x,
+                y: xy.y,
+                w: obj.Width,
+                h: paramHeight
+            };
+        }
 
-	for (var i = 0; i < gridRow; i++) {
-		var xy = computeCoordinate(0, i, paramDistance, w, paramHeight);
-		square2Create[i] = {
-			x: xy.x,
-			y: xy.y,
-			w: w,
-			h: paramHeight
-		};
-	}
+        return square2Create;
+    };
+    obj.CreateVerticalBar = function(paramWidth, paramDistance) {
+        var gridCol = Math.round(obj.Width / paramWidth);
+        var square2Create = new Array(gridCol);
 
-	return square2Create;
-}
+        for(var i = 0; i < gridCol; i++) {
+            var xy = obj.ComputeCoordinate(i, 0, paramDistance, paramWidth, obj.Height);
+            square2Create[i] = {
+                x: xy.x,
+                y: xy.y,
+                w: paramWidth,
+                h: obj.Height
+            };
+        }
 
-function createVerticalBar(paramWidth, paramDistance)
-{
-	var gridCol = Math.round(w / paramWidth);
-	var square2Create = new Array(gridCol);
+        return square2Create;
+    };
+    obj.CreateSquareGrid = function(paramWidth, paramHeight, paramDistance) {
+        var totalSpaceWidth = paramWidth + paramDistance;
+        var totalSpaceHeight = paramHeight + paramDistance;
+        var gridCol = Math.round(obj.Width / totalSpaceWidth);
+        var gridRow = Math.round(obj.Height / totalSpaceHeight);
+        var square2Create = [];
 
-	for (var i = 0; i < gridCol; i++) {
-		var xy = computeCoordinate(i, 0, paramDistance, paramWidth, h);
-		square2Create[i] = {
-			x: xy.x,
-			y: xy.y,
-			w: paramWidth,
-			h: h
-		};
-	}
+        for(var i = 0; i < gridCol; i++) {
+            square2Create[i] = new Array(gridRow);
+            for(var j = 0; j < gridRow; j++) {
+                var xy = obj.ComputeCoordinate(i, j, paramDistance, paramWidth, paramHeight);
+                square2Create[i][j] = {
+                    x: xy.x,
+                    y: xy.y,
+                    w: paramWidth,
+                    h: paramHeight
+                };
+            }
+        }
 
-	return square2Create;
-}
+        return square2Create;
+    };
+    obj.Draw = function(paramType, paramColor, paramWidth, paramHeight) {
+        var shape, col, row;
 
-function createSquareGrid(paramWidth, paramHeight, paramDistance)
-{
-	var totalSpaceWidth = paramWidth + paramDistance;
-	var totalSpaceHeight = paramHeight + paramDistance;
-	var gridCol = Math.round(w / totalSpaceWidth);
-	var gridRow = Math.round(h / totalSpaceHeight);
-	var square2Create = [];
+        switch(paramType) {
+            case ShapeType.HORIZONTAL:
+                shape = obj.CreateHorizontalBar(paramHeight, 0);
+                row = shape.length;
 
-	for (var i = 0; i < gridCol; i++) {
-		square2Create[i] = new Array2D();
-		square2Create[i].setArray(gridRow);
-		for (var j = 0; j < gridRow; j++) {
-			var xy = computeCoordinate(i, j, paramDistance, paramWidth, paramHeight);
-			square2Create[i].element[j] = {
-				x: xy.x,
-				y: xy.y,
-				w: paramWidth,
-				h: paramHeight
-			};
-		}
-	}
+                for(var i = 0; i < row; i++) {
+                    obj.Context.fillStyle = obj.GetRandomColor(paramColor);
+                    obj.Context.fillRect(shape[i].x, shape[i].y, shape[i].w, shape[i].h);
+                }
+                break;
+            case ShapeType.VERTICAL:
+                shape = obj.CreateVerticalBar(paramWidth, 0);
+                col = shape.length;
 
-	return square2Create;
-}
+                for(var i = 0; i < col; i++) {
+                    obj.Context.fillStyle = obj.GetRandomColor(paramColor);
+                    obj.Context.fillRect(shape[i].x, shape[i].y, shape[i].w, shape[i].h);
+                }
+                break;
+            case ShapeType.GRID:
+                shape = obj.CreateSquareGrid(paramWidth, paramHeight, 0);
+                col = shape.length;
+                row = shape[0].length;
 
-function computeCoordinate(idxCol, idxRow, paramDistance, paramWidth, paramHeight)
-{
-	var retxy = {
-		x: ((idxCol + 1) * paramDistance) + (idxCol * paramWidth),
-		y: ((idxRow + 1) * paramDistance) + (idxRow * paramHeight)
-	};
+                for(var i = 0; i < col; i++) {
+                    for(var j = 0; j < row; j++) {
+                        obj.Context.fillStyle = obj.GetRandomColor(paramColor);
+                        obj.Context.fillRect(shape[i][j].x, shape[i][j].y, shape[i][j].w, shape[i][j].h);
+                    }
+                }
+                break;
+            case ShapeType.ROUND_GRID:
+                shape = obj.CreateSquareGrid(paramWidth, paramHeight, 0);
+                col = shape.length;
+                row = shape[0].length;
 
-	return retxy;
-}
+                for(var i = 0; i < col; i++) {
+                    for(var j = 0; j < row; j++) {
+                        obj.Context.fillStyle = obj.GetRandomColor(paramColor);
+                        obj.Context.beginPath();
+                        obj.Context.arc((shape[i][j].x + shape[i][j].w) - shape[i][j].w / 2, (shape[i][j].y + shape[i][j].w) - shape[i][j].w / 2, shape[i][j].w / 2, 0, Math.PI * 2, true);
+                        obj.Context.closePath();
+                        obj.Context.fill();
+                    }
+                }
+                break;
+        }
+    };
+    obj.Save = function() {
+        window.open(obj.Canvas.toDataURL('image/png'));
+    };
+    obj.Resize = function() {
+        obj.Canvas.height = obj.Height;
+        obj.Canvas.width = obj.Width;
+        obj.Reset();
+    };
+    obj.Reset = function() {
+        obj.Context.clearRect(0, 0, obj.Width, obj.Height);
+    };
 
-function resize()
-{
-	w = canvas.width = renderWidth;
-	h = canvas.height = renderHeight;
+    return obj;
+})();
 
-	reset();
-}
+var Initializer = (function() {
+    var obj = {};
+    var mana = Mana;
 
-function reset()
-{
-	context.clearRect(0,0,w,h);
-}
+    obj.Configuration = (function() {
+        var objConf = {};
+        var defaultConf = {};
 
-// http://www.webdeveloper.com/forum/showthread.php?t=90849
-function Array2D()
-{
-	function setArray(paramLength)
-	{
-		this.element = [];
-		for (var i = 0; i < paramLength; i++) {
-			this.element[i] = null;
-		}
-	}
+        objConf.ShapeType = ShapeType.GRID;
+        objConf.ColorType = ColorType.BC;
+        objConf.ShapeWidth = 10;
+        objConf.ShapeHeight = 10;
+        objConf.Width = window.innerWidth;
+        objConf.Height = window.innerHeight;
+        objConf.DeviceType = DeviceType.IPHONE;
+        objConf.RenderMana = function() {
+            mana.Resize();
+            mana.Width = objConf.Width;
+            mana.Height = objConf.Height;
+            mana.Draw(objConf.ShapeType, objConf.ColorType, objConf.ShapeWidth, objConf.ShapeHeight);
+        };
+        objConf.SaveMana = function() {
+            mana.Save();
+        };
 
-	this.setArray = setArray;
-	this.element = null;
-}
+        return objConf;
+    })();
+    obj.InitDatGUI = function(config) {
+        var gui = new dat.GUI();
+        var shapeSizeFolder = gui.addFolder("Shape Size");
+        var renderSizeFolder = gui.addFolder("Render Size");
+        var shapeWidthController = shapeSizeFolder.add(config, "ShapeWidth").name("Shape Width").min(1).max(MaxScreenSize.Width);
+        var shapeHeightController = shapeSizeFolder.add(config, "ShapeHeight").name("Shape Height").min(1).max(MaxScreenSize.Height);
+        var appleScreenFolder = renderSizeFolder.addFolder("Apple Devices");
+        var androidScreenFolder = renderSizeFolder.addFolder("Android Devices");
+        var customScreenFolder = renderSizeFolder.addFolder("Custom Screen");
+        var appleScreenController = appleScreenFolder
+            .add(config, "DeviceType",
+                {
+                    "Iphone": DeviceType.IPHONE,
+                    "Iphone Retina Display": DeviceType.IPHONE_RETINA,
+                    "Ipad": DeviceType.IPAD
+                }).name("Apple Screen size");
+        var androidScreenController = androidScreenFolder
+            .add(config, "DeviceType",
+                {
+                    "QVGA (240x320)": DeviceType.ANDROID_240_320,
+                    "(480x640)": DeviceType.ANDROID_480_640,
+                    "WQVGA400 (240x400)": DeviceType.ANDROID_LDPI_240_400,
+                    "WQVGA432 (240x432)": DeviceType.ANDROID_LDPI_240_432,
+                    "HVGA (320x480)": DeviceType.ANDROID_320_480,
+                    "WVGA800 (480x800)": DeviceType.ANDROID_480_800,
+                    "WVGA854 (480x854)": DeviceType.ANDROID_480_854,
+                    "(600x1024)": DeviceType.ANDROID_600_1024,
+                    "(1024x600)": DeviceType.ANDROID_1024_600,
+                    "(1024x768)": DeviceType.ANDROID_1024_768,
+                    "(1280x768)": DeviceType.ANDROID_1280_768,
+                    "WXGA (1280x800)": DeviceType.ANDROID_1280_800,
+                    "(1536x1152)": DeviceType.ANDROID_1536_1152,
+                    "(1920x1152)": DeviceType.ANDROID_1920_1152,
+                    "(1920x1200)": DeviceType.ANDROID_1920_1200
+                }).name("Android Screen size");
+        var renderWidthController = customScreenFolder.add(config, "Width").name("Custom width").min(MinScreenSize.Width).max(MaxScreenSize.Width);
+        var renderHeightController = customScreenFolder.add(config, "Height").name("Custom height").min(MinScreenSize.Height).max(MaxScreenSize.Height);
+        var shapeController = gui
+            .add(config, "ShapeType",
+                {
+                    "Horizontal Bar": ShapeType.HORIZONTAL,
+                    "Vertical Bar": ShapeType.VERTICAL,
+                    "Pixel Grid": ShapeType.GRID,
+                    "Round Pixel Grid": ShapeType.ROUND_GRID
+                }).name("Shape");
+        var colorController = gui
+            .add(config, "ColorType",
+                {
+                    "Black and White": ColorType.BW,
+                    "Gray": ColorType.GRAY,
+                    "CMYK": ColorType.CMYK,
+                    "RGB": ColorType.RGB,
+                    "Bright Colorful": ColorType.BC,
+                    "Hakim Particle": ColorType.HP,
+                    "Google IO 2010 theme": ColorType.GOOGLEIO2010,
+                    "All Colors": ColorType.ALL
+                }).name("Color");
+        gui.add(config, "RenderMana").name("Render Shape");
+        gui.add(config, "SaveMana").name("Save Image");
+
+        appleScreenController.onFinishChange(function(value) {
+            var size = mana.GetScreenSize(value);
+            renderWidthController.setValue(size.w);
+            renderHeightController.setValue(size.h);
+        });
+        androidScreenController.onFinishChange(function(value) {
+            var size = mana.GetScreenSize(value);
+            renderWidthController.setValue(size.w);
+            renderHeightController.setValue(size.h);
+        });
+    };
+    obj.Init = function() {
+        var config = obj.Configuration;
+        document.body.appendChild(mana.Canvas);
+        window.addEventListener("resize", function () { config.RenderMana(); }, false);
+        obj.InitDatGUI(config);
+
+        config.RenderMana();
+    };
+
+    return obj;
+})();
