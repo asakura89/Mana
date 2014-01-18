@@ -1,46 +1,3 @@
-/**
- * Copyright (C) 2012 Dita A Subrata
- * yukka.pixel@gmail.com
- * http://yukkapixel.com
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- * 
- * 
- * 
- * version 0.1:
- * - First release
- * 
- * version 0.2:		
- * - Added save image function
- * - Added shape's width and height control
- * - Added google io 2010 color pallete
- * - Added rounded pixel grid
- * 
- * version 0.3:
- * - Added custom render size
- * - Added various apple and android screen size
- * 
- * version 0.4:
- * - Cleaning Up
- * - Fix screen size changes
- */
-
 "use strict";
 
 var ShapeType = {
@@ -55,10 +12,11 @@ var ColorType = {
     CMYK: "1",
     RGB: "2",
     GRAY: "3",
-    BC: "4",
+    CF: "4",
     HP: "5",
     GOOGLEIO2010: "6",
-    ALL: "7"
+    PLAYMELIKEACHILD: "7",
+    ALL: "8"
 };
 
 var DeviceType = {
@@ -100,24 +58,40 @@ var Mana = (function() {
     obj.Canvas = document.createElement("canvas");
     obj.Context = obj.Canvas.getContext("2d");
     obj.Colors = {
-        BlackWhite: ["#000000", "#ffffff"],
-        CMYK: ["#00ffff", "#ff00ff", "#ffff00", "#000000"],
-        RGB: ["#cc0000", "#00cc00", "#0000cc"],
-        Gray: ["#000000", "#080808", "#101010", "#181818",
-               "#202020", "#282828", "#303030", "#383838",
-               "#404040", "#484848", "#505050", "#585858",
-               "#606060", "#686868", "#707070", "#787878",
-               "#808080", "#888888", "#909090", "#989898",
-               "#a0a0a0", "#a8a8a8", "#b0b0b0", "#b8b8b8",
-               "#c0c0c0", "#d0d0d0", "#d8d8d8", "#e0e0e0",
-               "#e8e8e8", "#f0f0f0", "#f8f8f8", "#ffffff"],
-        BrightColorful: ["#f0f0ef", "#fbfaf9", "#8ecb00", "#8ac900",
-                         "#3e3e3e", "#46c7ec", "#58d5f1", "#ffae00",
-                         "#dc0967", "#e40b7c"],
-        HakimParticle: ["#000000", "#ff0000", "#ffff00"],
-        GoogleIO2010: ["#0068b3", "#f9aa89", "#e51937", "#c41230",
-                       "#ffd24f", "#f0b310", "#1ab7ea", "#005581",
-                       "#00704a", "#00a950", "#b3d88c"]
+        BlackWhite: [
+            "#000000", "#ffffff"
+        ],
+        CMYK: [
+            "#00ffff", "#ff00ff", "#ffff00", "#000000"
+        ],
+        RGB: [
+            "#cc0000", "#00cc00", "#0000cc"
+        ],
+        Gray: [
+            "#000000", "#080808", "#101010", "#181818",
+            "#202020", "#282828", "#303030", "#383838",
+            "#404040", "#484848", "#505050", "#585858",
+            "#606060", "#686868", "#707070", "#787878",
+            "#808080", "#888888", "#909090", "#989898",
+            "#a0a0a0", "#a8a8a8", "#b0b0b0", "#b8b8b8",
+            "#c0c0c0", "#d0d0d0", "#d8d8d8", "#e0e0e0",
+            "#e8e8e8", "#f0f0f0", "#f8f8f8", "#ffffff"
+        ],
+        Cheerful: [
+            "#f0f0ef", "#fbfaf9", "#8ecb00", "#3e3e3e",
+            "#46c7ec", "#ffae00", "#dc0967"
+        ],
+        HakimParticle: [
+            "#000000", "#ff0000", "#ffff00"
+        ],
+        GoogleIO2010: [
+            "#0068b3", "#f9aa89", "#e51937", "#c41230",
+            "#ffd24f", "#f0b310", "#1ab7ea", "#005581",
+            "#00704a", "#00a950", "#b3d88c"
+        ],
+        PlayMeLikeAChild: [
+            "#ab5e4f", "#dcad51", "#45b0b8", "#658592", "#e0dbad"
+        ]
     };
     obj.GetRandomColor = function(paramColor) {
         var arrlen, color;
@@ -139,9 +113,9 @@ var Mana = (function() {
                 arrlen = obj.Colors.RGB.length;
                 color = obj.Colors.RGB[Math.round(Math.random() * arrlen)];
                 break;
-            case ColorType.BC:
-                arrlen = obj.Colors.BrightColorful.length;
-                color = obj.Colors.BrightColorful[Math.round(Math.random() * arrlen)];
+            case ColorType.CF:
+                arrlen = obj.Colors.Cheerful.length;
+                color = obj.Colors.Cheerful[Math.round(Math.random() * arrlen)];
                 break;
             case ColorType.HP:
                 arrlen = obj.Colors.HakimParticle.length;
@@ -150,6 +124,10 @@ var Mana = (function() {
             case ColorType.GOOGLEIO2010:
                 arrlen = obj.Colors.GoogleIO2010.length;
                 color = obj.Colors.GoogleIO2010[Math.round(Math.random() * arrlen)];
+                break;
+            case ColorType.PLAYMELIKEACHILD:
+                arrlen = obj.Colors.PlayMeLikeAChild.length;
+                color = obj.Colors.PlayMeLikeAChild[Math.round(Math.random() * arrlen)];
                 break;
             case ColorType.ALL:
                 color = "rgba(" + Math.round(Math.random() * 255) + "," + Math.round(Math.random() * 255) + "," + Math.round(Math.random() * 255) + ", 1)";
@@ -375,7 +353,7 @@ var Initializer = (function() {
         var defaultConf = {};
 
         objConf.ShapeType = ShapeType.GRID;
-        objConf.ColorType = ColorType.BC;
+        objConf.ColorType = ColorType.CF;
         objConf.ShapeWidth = 10;
         objConf.ShapeHeight = 10;
         objConf.Width = window.innerWidth;
@@ -445,9 +423,10 @@ var Initializer = (function() {
                     "Gray": ColorType.GRAY,
                     "CMYK": ColorType.CMYK,
                     "RGB": ColorType.RGB,
-                    "Bright Colorful": ColorType.BC,
+                    "Cheerful": ColorType.CF,
                     "Hakim Particle": ColorType.HP,
                     "Google IO 2010 theme": ColorType.GOOGLEIO2010,
+                    "Play Me Like A Child": ColorType.PLAYMELIKEACHILD,
                     "All Colors": ColorType.ALL
                 }).name("Color");
         gui.add(config, "RenderMana").name("Render Shape");
