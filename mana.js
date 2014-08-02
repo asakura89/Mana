@@ -16,6 +16,8 @@ var ColorType = {
     HP: "HakimParticle",
     GOOGLEIO2010: "GoogleIO2010",
     PLAYMELIKEACHILD: "PlayMeLikeAChild",
+    CODEPLEX: "Codeplex",
+    BLUEGREEN: "BlueGreen",
     ALL: "ALL"
 };
 
@@ -364,6 +366,8 @@ var Initializer = (function() {
                     "Hakim Particle": ColorType.HP,
                     "Google IO 2010 theme": ColorType.GOOGLEIO2010,
                     "Play Me Like A Child": ColorType.PLAYMELIKEACHILD,
+                    "Codeplex": ColorType.CODEPLEX,
+                    "Blue and Green": ColorType.BLUEGREEN,
                     "All Colors": ColorType.ALL
                 }).name("Color");
         gui.add(config, "RenderMana").name("Render Shape");
