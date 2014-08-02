@@ -8,15 +8,15 @@ var ShapeType = {
 };
 
 var ColorType = {
-    BW: "0",
-    CMYK: "1",
-    RGB: "2",
-    GRAY: "3",
-    CF: "4",
-    HP: "5",
-    GOOGLEIO2010: "6",
-    PLAYMELIKEACHILD: "7",
-    ALL: "8"
+    BW: "BlackWhite",
+    CMYK: "CMYK",
+    RGB: "RGB",
+    GRAY: "Gray",
+    CF: "Cheerful",
+    HP: "HakimParticle",
+    GOOGLEIO2010: "GoogleIO2010",
+    PLAYMELIKEACHILD: "PlayMeLikeAChild",
+    ALL: "ALL"
 };
 
 var DeviceType = {
@@ -57,81 +57,18 @@ var Mana = (function() {
     obj.Height = window.innerHeight;
     obj.Canvas = document.createElement("canvas");
     obj.Context = obj.Canvas.getContext("2d");
-    obj.Colors = {
-        BlackWhite: [
-            "#000000", "#ffffff"
-        ],
-        CMYK: [
-            "#00ffff", "#ff00ff", "#ffff00", "#000000"
-        ],
-        RGB: [
-            "#cc0000", "#00cc00", "#0000cc"
-        ],
-        Gray: [
-            "#000000", "#080808", "#101010", "#181818",
-            "#202020", "#282828", "#303030", "#383838",
-            "#404040", "#484848", "#505050", "#585858",
-            "#606060", "#686868", "#707070", "#787878",
-            "#808080", "#888888", "#909090", "#989898",
-            "#a0a0a0", "#a8a8a8", "#b0b0b0", "#b8b8b8",
-            "#c0c0c0", "#d0d0d0", "#d8d8d8", "#e0e0e0",
-            "#e8e8e8", "#f0f0f0", "#f8f8f8", "#ffffff"
-        ],
-        Cheerful: [
-            "#f0f0ef", "#fbfaf9", "#8ecb00", "#3e3e3e",
-            "#46c7ec", "#ffae00", "#dc0967"
-        ],
-        HakimParticle: [
-            "#000000", "#ff0000", "#ffff00"
-        ],
-        GoogleIO2010: [
-            "#0068b3", "#f9aa89", "#e51937", "#c41230",
-            "#ffd24f", "#f0b310", "#1ab7ea", "#005581",
-            "#00704a", "#00a950", "#b3d88c"
-        ],
-        PlayMeLikeAChild: [
-            "#ab5e4f", "#dcad51", "#45b0b8", "#658592", "#e0dbad"
-        ]
-    };
-    obj.GetRandomColor = function(paramColor) {
-        var arrlen, color;
+    obj.Colors = Mana.Colors;
 
-        switch(paramColor) {
-            case ColorType.BW:
-                arrlen = obj.Colors.BlackWhite.length;
-                color = obj.Colors.BlackWhite[Math.round(Math.random() * arrlen)];
-                break;
-            case ColorType.GRAY:
-                arrlen = obj.Colors.Gray.length;
-                color = obj.Colors.Gray[Math.round(Math.random() * arrlen)];
-                break;
-            case ColorType.CMYK:
-                arrlen = obj.Colors.CMYK.length;
-                color = obj.Colors.CMYK[Math.round(Math.random() * arrlen)];
-                break;
-            case ColorType.RGB:
-                arrlen = obj.Colors.RGB.length;
-                color = obj.Colors.RGB[Math.round(Math.random() * arrlen)];
-                break;
-            case ColorType.CF:
-                arrlen = obj.Colors.Cheerful.length;
-                color = obj.Colors.Cheerful[Math.round(Math.random() * arrlen)];
-                break;
-            case ColorType.HP:
-                arrlen = obj.Colors.HakimParticle.length;
-                color = obj.Colors.HakimParticle[Math.round(Math.random() * arrlen)];
-                break;
-            case ColorType.GOOGLEIO2010:
-                arrlen = obj.Colors.GoogleIO2010.length;
-                color = obj.Colors.GoogleIO2010[Math.round(Math.random() * arrlen)];
-                break;
-            case ColorType.PLAYMELIKEACHILD:
-                arrlen = obj.Colors.PlayMeLikeAChild.length;
-                color = obj.Colors.PlayMeLikeAChild[Math.round(Math.random() * arrlen)];
-                break;
-            case ColorType.ALL:
-                color = "rgba(" + Math.round(Math.random() * 255) + "," + Math.round(Math.random() * 255) + "," + Math.round(Math.random() * 255) + ", 1)";
-                break;
+    obj.GetRandomColor = function(colorPalette) {
+        var color;
+        
+        if (colorPalette.toUpperCase() === ColorType.ALL) {
+            color = "rgba(" + Math.round(Math.random() * 255) + "," + Math.round(Math.random() * 255) + "," + Math.round(Math.random() * 255) + ", 1)";
+        }
+        else {
+            var colorArray = obj.Colors[colorPalette];
+            var arrlen = colorArray.length;
+            color = colorArray[Math.round(Math.random()*arrlen)];
         }
 
         return color;
