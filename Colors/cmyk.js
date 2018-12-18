@@ -1,6 +1,6 @@
-var Mana = Mana || {};
-Mana.Colors = Mana.Colors || {};
-Mana.Colors.CMYK = [
+import {Palettes} from "../Color.js";
+
+Palettes.CMYK = [
     "#00ffff",
     "#ff00ff",
     "#ffff00",

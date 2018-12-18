@@ -1,33 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>Pixel Mana</title>
-		<style type="text/css">
+    <head>
+        <meta charset="utf-8">
+        <title>Pixel Mana</title>
+        <style type="text/css">
             * { margin: 0; padding: 0; }
             html, body { width: 100%; height: 100%; overflow: hidden; }
             canvas { margin: 0; padding: 0; position: fixed; }
         </style>
 
-		<!-- ui -->
-		<script type="text/javascript" src="dat.gui.min.js"></script>
+        <!-- ui -->
+        <script type="text/javascript" src="dat.gui.min.js"></script>
 
-		<!-- colors -->
-        <script type="text/javascript" src="Colors/blackwhite.js"></script>
-        <script type="text/javascript" src="Colors/cmyk.js"></script>
-        <script type="text/javascript" src="Colors/rgb.js"></script>
-        <script type="text/javascript" src="Colors/gray.js"></script>
-        <script type="text/javascript" src="Colors/cheerful.js"></script>
-        <script type="text/javascript" src="Colors/hakimparticle.js"></script>
-        <script type="text/javascript" src="Colors/googleio2010.js"></script>
-        <script type="text/javascript" src="Colors/playmelikeachild.js"></script>
-        <script type="text/javascript" src="Colors/codeplex.js"></script>
-        <script type="text/javascript" src="Colors/bluegreen.js"></script>
+        <!-- colors -->
+        <script type="module" src="Colors/blackwhite.js"></script>
+        <script type="module" src="Colors/cmyk.js"></script>
+        <script type="module" src="Colors/rgb.js"></script>
+        <script type="module" src="Colors/gray.js"></script>
+        <script type="module" src="Colors/cheerful.js"></script>
+        <script type="module" src="Colors/hakimparticle.js"></script>
+        <script type="module" src="Colors/googleio2010.js"></script>
+        <script type="module" src="Colors/playmelikeachild.js"></script>
+        <script type="module" src="Colors/codeplex.js"></script>
+        <script type="module" src="Colors/bluegreen.js"></script>
+
+        <!-- screen -->
+        <script type="module" src="Devices/android1024600.js"></script>
+        <script type="module" src="Devices/android1024768.js"></script>
+        <script type="module" src="Devices/android1280768.js"></script>
+        <script type="module" src="Devices/android1280800.js"></script>
+        <script type="module" src="Devices/android15361152.js"></script>
+        <script type="module" src="Devices/android19201152.js"></script>
+        <script type="module" src="Devices/android19201200.js"></script>
+        <script type="module" src="Devices/android240320.js"></script>
+        <script type="module" src="Devices/android240400.js"></script>
+        <script type="module" src="Devices/android240432.js"></script>
+        <script type="module" src="Devices/android320480.js"></script>
+        <script type="module" src="Devices/android480640.js"></script>
+        <script type="module" src="Devices/android480800.js"></script>
+        <script type="module" src="Devices/android480854.js"></script>
+        <script type="module" src="Devices/android6001024.js"></script>
+        <script type="module" src="Devices/ipad.js"></script>
+        <script type="module" src="Devices/iphone.js"></script>
+        <script type="module" src="Devices/iphoneretina.js"></script>
+
+        <!-- shapes -->
+        <script type="module" src="Shapes/HorizontalBar.js"></script>
+        <script type="module" src="Shapes/RoundGrid.js"></script>
+        <script type="module" src="Shapes/SquareGrid.js"></script>
+        <script type="module" src="Shapes/VerticalBar.js"></script>
 
         <!-- engine -->
-        <script type="text/javascript" src="mana.js"></script>
-	</head>
-	<body onload="Initializer.Init();">
-	</body>
+        <script type="module" src="mana.js"></script>
+    </head>
+    <body>
+    </body>
 </html>
-		

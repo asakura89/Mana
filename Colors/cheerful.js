@@ -1,6 +1,6 @@
-var Mana = Mana || {};
-Mana.Colors = Mana.Colors || {};
-Mana.Colors.Cheerful = [
+import {Palettes} from "../Color.js";
+
+Palettes.Cheerful = [
     "#e40b7c",
     "#46c7ec",
     "#8ac900",

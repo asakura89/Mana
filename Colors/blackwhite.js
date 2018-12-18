@@ -1,6 +1,6 @@
-var Mana = Mana || {};
-Mana.Colors = Mana.Colors || {};
-Mana.Colors.BlackWhite = [
+import {Palettes} from "../Color.js";
+
+Palettes.BlackWhite = [
     "#000000",
     "#ffffff"
 ];

@@ -1,3 +1,6 @@
-var Mana = Mana || {};
-Mana.Colors = Mana.Colors || {};
-Mana.Colors.BlueGreen = [ "#bcd42a", "#4bb1b1" ];
+import {Palettes} from "../Color.js";
+
+Palettes.BlueGreen = [
+    "#bcd42a",
+    "#4bb1b1"
+];
