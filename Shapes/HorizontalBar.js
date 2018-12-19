@@ -1,13 +1,13 @@
+import {default as GridShape, Shapes} from "../GridShape.js";
 import Color from "../Color.js";
-import {Shapes, default as GridShape} from "../GridShape.js";
 
-class HorizontalBar extends GridShape {
-    ComputeCoordinate (screenWidth, screenHeight, height, gap) {
-        let rowsCount = Math.round(screenHeight / height);
-        let rows = [];
+class HorizontalBar {
+    static ComputeCoordinate (screenWidth, screenHeight, height, gap) {
+        const rowsCount = Math.round(screenHeight / height);
+        const rows = [];
 
-        for(let idx = 0; idx < rowsCount; idx++) {
-            let coord = super.ComputeCoordinate(0, idx, gap, screenWidth, height);
+        for (let idx = 0; idx < rowsCount; idx++) {
+            const coord = GridShape.ComputeCoordinate(0, idx, gap, screenWidth, height);
             rows.push({
                 x: coord.x,
                 y: coord.y,
@@ -19,14 +19,12 @@ class HorizontalBar extends GridShape {
         return rows;
     }
 
-    Draw (ctx, screenWidth, screenHeight, width, height, gap, palette) {
-        let rows = this.ComputeCoordinate(screenWidth, screenHeight, height, 0);
-        let color = new Color();
-        let row;
+    static Draw (ctx, screenWidth, screenHeight, width, height, gap, palette) {
+        const rows = this.ComputeCoordinate(screenWidth, screenHeight, height, 0);
 
-        for(let idx = 0; idx < rows.length; idx++) {
-            row = rows[idx];
-            ctx.fillStyle = color.GetRandom(palette);
+        for (let idx = 0; idx < rows.length; idx++) {
+            const row = rows[idx];
+            ctx.fillStyle = Color.GetRandom(palette);
             ctx.fillRect(row.x, row.y, row.w, row.h);
         }
     }

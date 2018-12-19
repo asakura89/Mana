@@ -1,22 +1,23 @@
-let Devices = {};
+const Devices = {};
+
 class Screen {
-    get Min() {
+    static get Min() {
         return {
             Width: 240,
             Height: 320
         };
     }
 
-    get Max() {
+    static get Max() {
         return {
             Width: 1920,
             Height: 1200
-        }
+        };
     }
 
-    GetByName (name) {
+    static GetByName (name) {
         return name ? Devices[name] : this.Min;
     }
 }
 
-export {Devices, Screen as default}
+export {Devices, Screen as default};

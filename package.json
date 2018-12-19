@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/asakura89/Mana#readme",
   "devDependencies": {
+    "eslint": "^5.10.0",
     "serve": "^1.4.0"
   }
 }

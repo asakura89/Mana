@@ -1,18 +1,18 @@
+import {default as GridShape, Shapes} from "../GridShape.js";
 import Color from "../Color.js";
-import {Shapes, default as GridShape} from "../GridShape.js";
 
-class SquareGrid extends GridShape {
-    ComputeCoordinate(screenWidth, screenHeight, width, height, gap) {
-        let totalWidth = width + gap;
-        let totalHeight = height + gap;
-        let colsCount = Math.round(screenWidth / totalWidth);
-        let rowsCount = Math.round(screenHeight / totalHeight);
-        let grid = [];
+class SquareGrid {
+    static ComputeCoordinate(screenWidth, screenHeight, width, height, gap) {
+        const totalWidth = width + gap;
+        const totalHeight = height + gap;
+        const colsCount = Math.round(screenWidth / totalWidth);
+        const rowsCount = Math.round(screenHeight / totalHeight);
+        const grid = [];
 
-        for(let idxc = 0; idxc < colsCount; idxc++) {
+        for (let idxc = 0; idxc < colsCount; idxc++) {
             grid[idxc] = [];
-            for(let idxr = 0; idxr < rowsCount; idxr++) {
-                let coord = super.ComputeCoordinate(idxc, idxr, gap, width, height);
+            for (let idxr = 0; idxr < rowsCount; idxr++) {
+                const coord = GridShape.ComputeCoordinate(idxc, idxr, gap, width, height);
                 grid[idxc][idxr] = {
                     x: coord.x,
                     y: coord.y,
@@ -25,16 +25,14 @@ class SquareGrid extends GridShape {
         return grid;
     }
 
-    Draw (ctx, screenWidth, screenHeight, width, height, gap, palette) {
-        let grid = this.ComputeCoordinate(screenWidth, screenHeight, width, height, 0);
-        let color = new Color();
-        let col, square;
+    static Draw (ctx, screenWidth, screenHeight, width, height, gap, palette) {
+        const grid = this.ComputeCoordinate(screenWidth, screenHeight, width, height, 0);
 
-        for(let idxc = 0; idxc < grid.length; idxc++) {
-            col = grid[idxc];
+        for (let idxc = 0; idxc < grid.length; idxc++) {
+            const col = grid[idxc];
             for (let idxr = 0; idxr < col.length; idxr++) {
-                square = col[idxr];
-                ctx.fillStyle = color.GetRandom(palette);
+                const square = col[idxr];
+                ctx.fillStyle = Color.GetRandom(palette);
                 ctx.fillRect(square.x, square.y, square.w, square.h);
             }
         }

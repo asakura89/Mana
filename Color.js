@@ -1,8 +1,9 @@
-let Palettes = {};
+const Palettes = {};
+
 class Color {
-    GetRandom (palette) {
+    static GetRandom (palette) {
         if (palette) {
-            let colors = Palettes[palette];
+            const colors = Palettes[palette];
             return colors[Math.round(Math.random() *colors.length)];
         }
         else
@@ -10,4 +11,4 @@ class Color {
     }
 }
 
-export {Palettes, Color as default}
+export {Palettes, Color as default};

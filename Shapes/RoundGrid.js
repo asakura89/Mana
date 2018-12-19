@@ -3,18 +3,16 @@ import {Shapes} from "../GridShape.js";
 import SquareGrid from "./SquareGrid.js";
 
 class RoundGrid extends SquareGrid {
-    Draw (ctx, screenWidth, screenHeight, width, height, gap, palette) {
-        let grid = this.ComputeCoordinate(screenWidth, screenHeight, width, height, 0);
-        let color = new Color();
-        let col, circle;
+    static Draw (ctx, screenWidth, screenHeight, width, height, gap, palette) {
+        const grid = super.ComputeCoordinate(screenWidth, screenHeight, width, height, 0);
 
-        for(let idxc = 0; idxc < grid.length; idxc++) {
-            col = grid[idxc];
+        for (let idxc = 0; idxc < grid.length; idxc++) {
+            const col = grid[idxc];
             for (let idxr = 0; idxr < col.length; idxr++) {
-                circle = col[idxr];
-                ctx.fillStyle = color.GetRandom(palette);
+                const circle = col[idxr];
+                ctx.fillStyle = Color.GetRandom(palette);
                 ctx.beginPath();
-                ctx.arc((circle.x +circle.w) -circle.w /2, (circle.y +circle.w) -circle.w /2, circle.w /2, 0, Math.PI *2, true);
+                ctx.arc((circle.x +circle.w) -(circle.w /2), (circle.y +circle.w) -(circle.w /2), circle.w /2, 0, Math.PI *2, true);
                 ctx.closePath();
                 ctx.fill();
             }
@@ -23,4 +21,3 @@ class RoundGrid extends SquareGrid {
 }
 
 Shapes.RoundGrid = RoundGrid;
-
