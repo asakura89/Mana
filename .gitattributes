@@ -99,7 +99,7 @@
 *.resx          text
 
 
-# Enta spesific
+# Custom
 *.ejx           text
 *.min.ejx       binary
 *.eqx           text

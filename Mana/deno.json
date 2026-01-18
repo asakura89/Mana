@@ -1,0 +1,22 @@
+{
+    "tasks": {
+        "build": "deno bundle client/src/main.ts --outdir=client/dist",
+        "serve": "deno run --allow-read --allow-net server/main.ts",
+        "dev": "deno task build && deno task serve",
+        "check": "deno check ./**/*.ts"
+    },
+    "compilerOptions": {
+        "target": "es5",
+        "strict": true,
+        "lib": [
+            "es5",
+            "es6",
+            "dom",
+            "deno.ns"
+        ]
+    },
+    "imports": {
+        "@oak/oak": "jsr:@oak/oak@^17.2.0",
+        "@std/path": "jsr:@std/path@^1.1.4"
+    }
+}

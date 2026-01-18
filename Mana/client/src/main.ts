@@ -1,0 +1,41 @@
+import "./colors/timer.ts";
+import "./colors/blackwhite.ts";
+import "./colors/cmyk.ts";
+import "./colors/rgb.ts";
+import "./colors/gray.ts";
+import "./colors/cheerful.ts";
+import "./colors/hakimparticle.ts";
+import "./colors/googleio2010.ts";
+import "./colors/playmelikeachild.ts";
+import "./colors/codeplex.ts";
+import "./colors/bluegreen.ts";
+import "./colors/green.ts";
+import "./colors/violetta.ts";
+import "./colors/severalpastel.ts";
+import "./colors/msedgehispanictheme.ts";
+
+import "./devices/android1024600.ts";
+import "./devices/android1024768.ts";
+import "./devices/android1280768.ts";
+import "./devices/android1280800.ts";
+import "./devices/android15361152.ts";
+import "./devices/android19201152.ts";
+import "./devices/android19201200.ts";
+import "./devices/android240320.ts";
+import "./devices/android240400.ts";
+import "./devices/android240432.ts";
+import "./devices/android320480.ts";
+import "./devices/android480640.ts";
+import "./devices/android480800.ts";
+import "./devices/android480854.ts";
+import "./devices/android6001024.ts";
+import "./devices/ipad.ts";
+import "./devices/iphone.ts";
+import "./devices/iphoneretina.ts";
+
+import "./shapes/RoundGrid.ts";
+import "./shapes/SquareGrid.ts";
+import "./shapes/HorizontalBar.ts";
+import "./shapes/VerticalBar.ts";
+
+import "./initializer.ts";
