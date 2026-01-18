@@ -1,6 +1,6 @@
 {
     "tasks": {
-        "build": "deno bundle client/src/main.ts --outdir=client/dist",
+        "build": "deno bundle client/src/main.ts --minify --outdir=client/dist",
         "serve": "deno run --allow-read --allow-net server/main.ts",
         "dev": "deno task build && deno task serve",
         "check": "deno check ./**/*.ts"
