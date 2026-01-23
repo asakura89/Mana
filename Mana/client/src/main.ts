@@ -37,5 +37,15 @@ import "./shapes/RoundGrid.ts";
 import "./shapes/SquareGrid.ts";
 import "./shapes/HorizontalBar.ts";
 import "./shapes/VerticalBar.ts";
+import "./shapes/HexagonGrid.ts";
+import "./shapes/OctagonGrid.ts";
+import "./shapes/FloralGrid.ts";
+import "./shapes/RotatedSquareGrid.ts";
+import "./shapes/StippledSquareGrid.ts";
+import "./shapes/TriangleGrid.ts";
+import "./shapes/DiamondGrid.ts";
+import "./shapes/StarGrid.ts";
+import "./shapes/RingGrid.ts";
+import "./shapes/CrossGrid.ts";
 
 import "./initializer.ts";
