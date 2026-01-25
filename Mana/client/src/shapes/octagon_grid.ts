@@ -1,13 +1,13 @@
 import GridShape, { Shapes } from "../grid_shape.ts";
 import Color from "../color.ts";
 
-class CrossGrid {
-    static Draw(ctx: CanvasRenderingContext2D, screenWidth: number, screenHeight: number, width: number, height: number, gap: number, palette: string): void {
+class OctagonGrid {
+    static Draw(ctx: CanvasRenderingContext2D, screenWidth: number, screenHeight: number, width: number, height: number, gap: number, palette: string, randomMinSize: number, randomMaxSize: number, randomDensity: number, randomMargin: number): void {
         const totalWidth = width + gap;
         const totalHeight = height + gap;
         const colsCount = Math.round(screenWidth / totalWidth);
         const rowsCount = Math.round(screenHeight / totalHeight);
-        const barW = Math.max(2, Math.min(width, height) * 0.2);
+        const radius = Math.min(width, height) / 2;
 
         for (let idxc = 0; idxc < colsCount; idxc++) {
             for (let idxr = 0; idxr < rowsCount; idxr++) {
@@ -16,8 +16,14 @@ class CrossGrid {
                 const cy = coord.y + height / 2;
                 ctx.fillStyle = Color.GetRandom(palette);
                 ctx.beginPath();
-                ctx.rect(cx - barW / 2, coord.y, barW, height);
-                ctx.rect(coord.x, cy - barW / 2, width, barW);
+                for (let i = 0; i < 8; i++) {
+                    const angle = (Math.PI / 4) * i;
+                    const x = cx + Math.cos(angle) * radius;
+                    const y = cy + Math.sin(angle) * radius;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+
                 ctx.closePath();
                 ctx.fill();
             }
@@ -25,4 +31,4 @@ class CrossGrid {
     }
 }
 
-Shapes.CrossGrid = CrossGrid;
+Shapes.OctagonGrid = OctagonGrid;

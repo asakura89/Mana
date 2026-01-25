@@ -25,7 +25,7 @@ class SquareGrid {
         return grid;
     }
 
-    static Draw(ctx: CanvasRenderingContext2D, screenWidth: number, screenHeight: number, width: number, height: number, gap: number, palette: string): void {
+    static Draw(ctx: CanvasRenderingContext2D, screenWidth: number, screenHeight: number, width: number, height: number, gap: number, palette: string, randomMinSize: number, randomMaxSize: number, randomDensity: number, randomMargin: number): void {
         const grid = this.ComputeCoordinate(screenWidth, screenHeight, width, height, 0);
 
         for (let idxc = 0; idxc < grid.length; idxc++) {
