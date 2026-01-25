@@ -13,7 +13,11 @@ export type Shape = {
         width: number,
         height: number,
         gap: number,
-        palette: string
+        palette: string,
+        randomMinSize: number,
+        randomMaxSize: number,
+        randomDensity: number,
+        randomMargin: number
     ) => void;
 };
 
@@ -25,4 +29,8 @@ export type RenderConfiguration = {
     Height: number;
     ScreenWidth: number;
     ScreenHeight: number;
+    RandomMinSize: number;
+    RandomMaxSize: number;
+    RandomDensity: number;
+    RandomMargin: number;
 };

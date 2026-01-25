@@ -2,7 +2,7 @@ import GridShape, { Shapes } from "../grid_shape.ts";
 import Color from "../color.ts";
 
 class TriangleGrid {
-    static Draw(ctx: CanvasRenderingContext2D, screenWidth: number, screenHeight: number, width: number, height: number, gap: number, palette: string): void {
+    static Draw(ctx: CanvasRenderingContext2D, screenWidth: number, screenHeight: number, width: number, height: number, gap: number, palette: string, randomMinSize: number, randomMaxSize: number, randomDensity: number, randomMargin: number): void {
         const totalWidth = width + gap;
         const totalHeight = height + gap;
         const colsCount = Math.round(screenWidth / totalWidth);

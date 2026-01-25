@@ -1,9 +1,9 @@
 import Color from "../color.ts";
 import { Shapes } from "../grid_shape.ts";
-import SquareGrid from "./SquareGrid.ts";
+import SquareGrid from "./square_grid.ts";
 
 class RoundGrid extends SquareGrid {
-    static Draw(ctx: CanvasRenderingContext2D, screenWidth: number, screenHeight: number, width: number, height: number, gap: number, palette: string): void {
+    static Draw(ctx: CanvasRenderingContext2D, screenWidth: number, screenHeight: number, width: number, height: number, gap: number, palette: string, randomMinSize: number, randomMaxSize: number, randomDensity: number, randomMargin: number): void {
         const grid = super.ComputeCoordinate(screenWidth, screenHeight, width, height, 0);
 
         for (let idxc = 0; idxc < grid.length; idxc++) {

@@ -8,6 +8,8 @@ type DatGuiController = {
     name: (value: string) => DatGuiController;
     onFinishChange: (callback: (value: string) => void) => DatGuiController;
     setValue: (value: number) => void;
+    domElement?: HTMLElement;
+    __input?: HTMLInputElement;
 };
 
 type DatGui = {
@@ -42,23 +44,23 @@ class Initializer {
             Width: 10,
             Height: 10,
             ScreenWidth: window.innerWidth,
-            ScreenHeight: window.innerHeight
+            ScreenHeight: window.innerHeight,
+            RandomMinSize: 10,
+            RandomMaxSize: 50,
+            RandomDensity: 4,
+            RandomMargin: 10
         };
-
-        window.addEventListener("resize", () => {
-            mana.Render(this.configuration);
-        }, false);
 
         this.datGui = createDatGui();
         const shapeSizeFolder = this.datGui.addFolder("Size");
 
-        shapeSizeFolder
+        const widthController = shapeSizeFolder
             .add(this.configuration, "Width")
             .min(1)
             .max(Screen.Max.Width)
             .name("Shape Width");
 
-        shapeSizeFolder
+        const heightController = shapeSizeFolder
             .add(this.configuration, "Height")
             .min(1)
             .max(Screen.Max.Height)
@@ -99,13 +101,57 @@ class Initializer {
                 renderHeightController.setValue(size.Height);
             });
 
-        this.datGui
+        const shapeController = this.datGui
             .add(this.configuration, "Shape", Mana.Shapes)
             .name("Shape");
 
         this.datGui
             .add(this.configuration, "Palette", Mana.Palettes)
             .name("Palette");
+
+        const randomFolder = this.datGui.addFolder("Random");
+
+        randomFolder
+            .add(this.configuration, "RandomMinSize")
+            .min(1)
+            .max(200)
+            .name("Min Size");
+
+        randomFolder
+            .add(this.configuration, "RandomMaxSize")
+            .min(1)
+            .max(400)
+            .name("Max Size");
+
+        randomFolder
+            .add(this.configuration, "RandomDensity")
+            .min(0.5)
+            .max(20)
+            .name("Density");
+
+        randomFolder
+            .add(this.configuration, "RandomMargin")
+            .min(0)
+            .max(200)
+            .name("Margin");
+
+        const setSizeControllersEnabled = (enabled: boolean) => {
+            const widthInput = widthController.__input ?? widthController.domElement?.querySelector("input");
+            const heightInput = heightController.__input ?? heightController.domElement?.querySelector("input");
+            if (widthInput) widthInput.disabled = !enabled;
+            if (heightInput) heightInput.disabled = !enabled;
+        };
+
+        const updateSizeControllersForShape = (shapeName: string) => {
+            const isScatter = shapeName.toLowerCase().includes("scatter");
+            setSizeControllersEnabled(!isScatter);
+        };
+
+        shapeController.onFinishChange((value) => {
+            updateSizeControllersForShape(value);
+        });
+
+        updateSizeControllersForShape(this.configuration.Shape);
 
         const configuration = this.configuration;
         this.datGui

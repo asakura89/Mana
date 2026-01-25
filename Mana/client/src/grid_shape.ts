@@ -1,6 +1,7 @@
 import type { Shape } from "./types.ts";
 
 export const Shapes: Record<string, Shape> = {};
+export const ScatterShapes: Record<string, boolean> = {};
 
 export default class GridShape {
     static ComputeCoordinate(colIdx: number, rowIdx: number, gap: number, width: number, height: number) {

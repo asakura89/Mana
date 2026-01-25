@@ -60,7 +60,19 @@ export default class Mana {
         this.Resize(conf.ScreenWidth, conf.ScreenHeight);
         const shapeType = Shapes[conf.Shape];
         if (shapeType) {
-            shapeType.Draw(this.Context, conf.ScreenWidth, conf.ScreenHeight, conf.Width, conf.Height, 0, conf.Palette);
+            shapeType.Draw(
+                this.Context,
+                conf.ScreenWidth,
+                conf.ScreenHeight,
+                conf.Width,
+                conf.Height,
+                0,
+                conf.Palette,
+                conf.RandomMinSize,
+                conf.RandomMaxSize,
+                conf.RandomDensity,
+                conf.RandomMargin
+            );
         }
     }
 
